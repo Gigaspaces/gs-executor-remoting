@@ -5,4 +5,4 @@ Example of how to do executor remoting in an efficient manner by using the Proje
 
 To run:
 
-	$ scala test -i
+	$ gradle test -i
