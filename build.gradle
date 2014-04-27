@@ -2,8 +2,8 @@ apply plugin: 'scala'
 apply plugin: 'groovy'
 
 // this type of variable declaration is deprecated and will be removed in gradle >= 3
-localRepo = "$System.env.M2_REPO"
-jsHomedir = "$System.env.JSHOMEDIR"
+localRepo = "/Users/jason/.m2/repository" //"$System.env.M2_REPO"
+jsHomedir = "/Users/jason/gigaspaces" //"$System.env.JSHOMEDIR"
 gsFolder = localRepo + '/com/gigaspaces/'
 gsScalaLibDir = jsHomedir + '/lib/platform/scala/'
 // 1. The tests in this build script only work with version 9.6.2 and possibly earlier
