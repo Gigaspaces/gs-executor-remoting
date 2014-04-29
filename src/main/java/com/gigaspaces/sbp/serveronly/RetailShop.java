@@ -1,7 +1,8 @@
-package com.gigaspaces.sbp.server;
+package com.gigaspaces.sbp.serveronly;
 
 import com.gigaspaces.sbp.Gear;
 import com.gigaspaces.sbp.Watch;
+import com.gigaspaces.sbp.WatchRepair;
 import org.openspaces.core.GigaSpace;
 import org.openspaces.remoting.RemotingService;
 

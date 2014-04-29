@@ -44,16 +44,7 @@ abstract class GsI10nSuite extends FunSuite with BeforeAndAfterAllConfigMap with
   val configLocationProperty = "configLocation"
   val localViewQueryListProperty = "localViewQueryList"
 
-  protected var defaults = Map[String, Any](
-    schemaProperty -> "partitioned-sync2backup"
-    , numInstancesProperty -> int2Integer(1)
-    , numBackupsProperty -> int2Integer(1)
-    , instanceIdProperty -> int2Integer(1)
-    , spaceUrlProperty -> "/./space"
-    , spaceModeProperty -> SpaceMode.Embedded
-    , configLocationProperty -> "classpath*:/com/gigaspaces/GsGridI10nSuite.xml"
-    , localViewQueryListProperty -> List[SQLQuery[_]]()
-  )
+  protected var defaults = Map[String, Any]()
 
   /**
    * Test instances. The purpose of this class is to initialize these members

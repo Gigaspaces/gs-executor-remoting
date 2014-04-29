@@ -4,7 +4,7 @@ import com.gigaspaces.GsI10nSuite
 import scala.util.Random
 import org.scalatest.ConfigMap
 import com.j_spaces.core.client.SQLQuery
-import com.gigaspaces.sbp.server.WatchRepair
+import com.gigaspaces.sbp.clientonly.BrokenWatchOwner
 
 /**
  * Created by IntelliJ IDEA.
@@ -36,7 +36,7 @@ class WatchRepairSuite extends GsI10nSuite {
 
   val defaultConfigMap = new ConfigMap( defaults )
 
-  var watchRepair: WatchRepair = null
+  var brokenWatchOwner: BrokenWatchOwner = null
 
   override def beforeAll(cm: ConfigMap): Unit = {
     setupWith(defaultConfigMap)
@@ -69,7 +69,7 @@ class WatchRepairSuite extends GsI10nSuite {
     val newGears = testGears()
     assume(oldGears != newGears)
 
-    watchRepair.switchGears(b4Update, newGears)
+    brokenWatchOwner.sendRequestWithParts(b4Update, newGears)
 
     val afterGears = readFromGigaSpace.getGears
     assert(afterGears === newGears, "we've changed gears")
@@ -83,7 +83,7 @@ class WatchRepairSuite extends GsI10nSuite {
     val newGears = testGears()
     assume(oldGears != newGears)
 
-    watchRepair.switchGears(b4Update, newGears)
+    brokenWatchOwner.sendRequestWithParts(b4Update, newGears)
 
     val afterGears = readFromGigaSpace.getGears
     assert(afterGears === newGears, "we've changed gears (with projection)")
