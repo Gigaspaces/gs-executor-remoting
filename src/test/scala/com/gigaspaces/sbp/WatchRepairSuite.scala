@@ -21,18 +21,18 @@ class WatchRepairSuite extends GsI10nSuite {
   val numPartitions = 2
   val numTestWatches = 4
 
-  val defaultConfigMap = new ConfigMap(
-    Map[String, Any](
-      schemaProperty -> "partitioned-sync2backup"
-      , numInstancesProperty -> int2Integer(numPartitions)
-      , numBackupsProperty -> int2Integer(0)
-      , instanceIdProperty -> int2Integer(1)
-      , spaceUrlProperty -> "/./WatchRepairSuite"
-      , spaceModeProperty -> SpaceMode.Embedded
-      , configLocationProperty -> "classpath*:/com/gigaspaces/sbp/WatchRepairSuite.xml"
-      , localViewQueryListProperty -> List[SQLQuery[_]]()
-    )
+  defaults = Map[String, Any](
+    schemaProperty -> "partitioned-sync2backup"
+    , numInstancesProperty -> int2Integer(numPartitions)
+    , numBackupsProperty -> int2Integer(0)
+    , instanceIdProperty -> int2Integer(1)
+    , spaceUrlProperty -> "/./WatchRepairSuite"
+    , spaceModeProperty -> SpaceMode.Embedded
+    , configLocationProperty -> "classpath*:/com/gigaspaces/sbp/WatchRepairSuite.xml"
+    , localViewQueryListProperty -> List[SQLQuery[_]]()
   )
+
+  val defaultConfigMap = new ConfigMap( defaults )
 
   var watchRepair: WatchRepair = null
 

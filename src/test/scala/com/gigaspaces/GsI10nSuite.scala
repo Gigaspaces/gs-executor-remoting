@@ -44,7 +44,7 @@ abstract class GsI10nSuite extends FunSuite with BeforeAndAfterAllConfigMap with
   val configLocationProperty = "configLocation"
   val localViewQueryListProperty = "localViewQueryList"
 
-  protected val defaults = Map[String, Any](
+  protected var defaults = Map[String, Any](
     schemaProperty -> "partitioned-sync2backup"
     , numInstancesProperty -> int2Integer(1)
     , numBackupsProperty -> int2Integer(1)
@@ -101,11 +101,12 @@ abstract class GsI10nSuite extends FunSuite with BeforeAndAfterAllConfigMap with
       case _ =>
         defaults.get(propertyName)
     }
-    innerP match {
-      case Some(q) => q
-      case _ =>
-        throw new UnsupportedOperationException(String.format("No value exists for property name: [%s].", propertyName))
-    }
+    innerP
+//    innerP match {
+//      case Some(q) => q
+//      case _ =>
+//        throw new UnsupportedOperationException(String.format("No value exists for property name: [%s].", propertyName))
+//    }
   }
 
   /* i10n infrastructure setup methods */
