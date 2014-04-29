@@ -21,12 +21,14 @@ class WatchRepairSuite extends GsI10nSuite {
   val numPartitions = 2
   val numTestWatches = 4
 
+  val spaceName = classOf[WatchRepairSuite].getSimpleName
+
   defaults = Map[String, Any](
     schemaProperty -> "partitioned-sync2backup"
     , numInstancesProperty -> int2Integer(numPartitions)
     , numBackupsProperty -> int2Integer(0)
     , instanceIdProperty -> int2Integer(1)
-    , spaceUrlProperty -> "/./WatchRepairSuite"
+    , spaceUrlProperty -> s"/./$spaceName"
     , spaceModeProperty -> SpaceMode.Embedded
     , configLocationProperty -> "classpath*:/com/gigaspaces/sbp/WatchRepairPu.xml"
     , localViewQueryListProperty -> List[SQLQuery[_]]()
