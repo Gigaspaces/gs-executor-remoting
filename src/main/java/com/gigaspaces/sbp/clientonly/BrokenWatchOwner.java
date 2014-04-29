@@ -20,6 +20,10 @@ public class BrokenWatchOwner {
     @ExecutorProxy
     private WatchRepair watchRepair;
 
+    public BrokenWatchOwner(WatchRepair watchRepair) {
+        this.watchRepair = watchRepair;
+    }
+
     public void sendRequestWithParts(Watch fixMe, List<Gear> withThese){
         watchRepair.switchGears(fixMe, withThese);
     }
