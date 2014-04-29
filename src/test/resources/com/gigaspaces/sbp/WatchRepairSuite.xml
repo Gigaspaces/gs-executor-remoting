@@ -62,9 +62,7 @@
     -->
     <!--<os-core:refreshable-context-loader id="modeExample" location="classpath:/META-INF/spring/mode/mode.xml"/>-->
 
-    <!--<os-remoting:service-exporter id="serviceExporter">-->
-        <!--<os-remoting:service ref="modeExample"/>-->
-    <!--</os-remoting:service-exporter>-->
+    <os-remoting:service-exporter id="serviceExporter"/>
 
     <!--
         Remoting supprt exporting the data processor for remoting invocation using OpenSpaces Remoting.
