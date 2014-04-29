@@ -15,7 +15,8 @@
     <context:component-scan base-package="com.gigaspaces.sbp.clientonly"/>
     <os-remoting:annotation-support />
 
-    <os-core:space id="space" url="jini://**/**/WatchRepairSuite" />
+    <os-core:space id="space" url="jini://*/*/WatchRepairSuite" />
+    <os-core:distributed-tx-manager id="transactionManager"/>
     <os-core:giga-space id="gigaSpace" space="space" tx-manager="transactionManager"/>
 
 </beans>

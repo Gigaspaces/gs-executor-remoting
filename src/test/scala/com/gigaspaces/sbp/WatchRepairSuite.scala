@@ -5,13 +5,15 @@ import scala.util.Random
 import org.scalatest.ConfigMap
 import com.j_spaces.core.client.SQLQuery
 import com.gigaspaces.sbp.clientonly.BrokenWatchOwner
+import org.springframework.context.support.ClassPathXmlApplicationContext
 
-/**
- * Created by IntelliJ IDEA.
- * User: jason
- * Date: 4/27/14
- * Time: 5:30 AM
- */
+/** Created by IntelliJ IDEA.
+  * User: jason
+  * Date: 4/27/14
+  * Time: 5:30 AM
+  * NOTE: In order for this test to run with two partitions, an appropriate gslicense.xml file
+  * should be installed at src/test/resources/gslicense.xml
+  */
 class WatchRepairSuite extends GsI10nSuite {
 
   // SETUP STUFF
@@ -38,8 +40,14 @@ class WatchRepairSuite extends GsI10nSuite {
 
   var brokenWatchOwner: BrokenWatchOwner = null
 
+  def loadRemoteProxyContainingBean(contextResource: String): BrokenWatchOwner = {
+    val ctxt = new ClassPathXmlApplicationContext(contextResource)
+    ctxt.getBean("brokenWatchOwner").asInstanceOf[BrokenWatchOwner]
+  }
+
   override def beforeAll(cm: ConfigMap): Unit = {
     setupWith(defaultConfigMap)
+    brokenWatchOwner = loadRemoteProxyContainingBean("classpath*:/com/gigaspaces/sbp/WatchRepairClient.xml")
   }
 
   var testWatches: Seq[Watch] = null
