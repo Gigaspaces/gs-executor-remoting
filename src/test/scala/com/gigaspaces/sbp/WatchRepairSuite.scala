@@ -28,7 +28,7 @@ class WatchRepairSuite extends GsI10nSuite {
     , instanceIdProperty -> int2Integer(1)
     , spaceUrlProperty -> "/./WatchRepairSuite"
     , spaceModeProperty -> SpaceMode.Embedded
-    , configLocationProperty -> "classpath*:/com/gigaspaces/sbp/WatchRepairSuite.xml"
+    , configLocationProperty -> "classpath*:/com/gigaspaces/sbp/WatchRepairPu.xml"
     , localViewQueryListProperty -> List[SQLQuery[_]]()
   )
 
