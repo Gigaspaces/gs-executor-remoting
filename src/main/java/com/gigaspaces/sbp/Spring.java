@@ -1,12 +1,14 @@
 package com.gigaspaces.sbp;
 
+import java.io.Serializable;
+
 /**
  * Created by IntelliJ IDEA.
  * User: jason
  * Date: 4/27/14
  * Time: 5:16 AM
  */
-public class Spring implements WatchPart {
+public class Spring implements WatchPart, Serializable{
 
     private Float weight;
 

@@ -111,7 +111,7 @@ class WatchRepairSuite extends GsI10nSuite {
   }
 
   def firstTestWatch: Watch = {
-    val watch = testWatches.filter(w => w.getName == "Watch 1").head
+    val watch = testWatches.filter(w => w.getName == "Watch 2").head
     assume(watch != null, "Test watch was not written as expected.")
     watch
   }

@@ -4,6 +4,7 @@ import com.gigaspaces.annotation.pojo.SpaceClass;
 import com.gigaspaces.annotation.pojo.SpaceId;
 import com.gigaspaces.annotation.pojo.SpaceRouting;
 
+import java.io.Serializable;
 import java.util.List;
 
 /**
@@ -14,7 +15,7 @@ import java.util.List;
  * Provides toy model
  */
 @SpaceClass
-public class Watch {
+public class Watch implements Serializable{
 
     // canonical GigaSpaces constructs
     private String spaceId;
