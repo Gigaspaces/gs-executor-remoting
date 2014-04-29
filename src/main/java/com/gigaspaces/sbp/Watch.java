@@ -2,6 +2,7 @@ package com.gigaspaces.sbp;
 
 import com.gigaspaces.annotation.pojo.SpaceClass;
 import com.gigaspaces.annotation.pojo.SpaceId;
+import com.gigaspaces.annotation.pojo.SpaceRouting;
 
 import java.util.List;
 
@@ -15,21 +16,34 @@ import java.util.List;
 @SpaceClass
 public class Watch {
 
-    private String id;
-    private String name;
-    private boolean dirty;
-    private Float weight;
+    // canonical GigaSpaces constructs
+    private String spaceId;
+    private Integer partitionId;
 
+    // some properties
+    private String name;
+    private Float weight;
     private List<Gear> gears;
     private List<Spring> springs;
 
+    private boolean dirty;
+
     @SpaceId(autoGenerate = true)
-    public String getId(){
-        return id;
+    public String getSpaceId(){
+        return spaceId;
     }
 
-    public void setId(String id) {
-        this.id = id;
+    public void setSpaceId(String spaceId) {
+        this.spaceId = spaceId;
+    }
+
+    @SpaceRouting
+    public Integer getPartitionId() {
+        return partitionId;
+    }
+
+    public void setPartitionId(Integer partitionId) {
+        this.partitionId = partitionId;
     }
 
     public String getName() {

@@ -31,7 +31,7 @@ import org.openspaces.pu.container.integrated.IntegratedProcessingUnitContainerP
   * Time: 3:25 PM
   *
   * An abstract test suite that can be used to instrument scala tests that start up a
-  * new container in standalone mode and then create a [[GigaSpace]] reference into it.
+  * new container sin standalone mode and then create a [[GigaSpace]] reference into it.
   */
 abstract class GsI10nSuite extends FunSuite with BeforeAndAfterAllConfigMap with BeforeAndAfterEach {
 
@@ -44,7 +44,7 @@ abstract class GsI10nSuite extends FunSuite with BeforeAndAfterAllConfigMap with
   val configLocationProperty = "configLocation"
   val localViewQueryListProperty = "localViewQueryList"
 
-  private val defaults = Map[String, Any](
+  protected val defaults = Map[String, Any](
     schemaProperty -> "partitioned-sync2backup"
     , numInstancesProperty -> int2Integer(1)
     , numBackupsProperty -> int2Integer(1)
@@ -80,10 +80,14 @@ abstract class GsI10nSuite extends FunSuite with BeforeAndAfterAllConfigMap with
 
   override def beforeAll(configMap: ConfigMap = new ConfigMap(Map[String, Any]())): Unit = {
 
+    setupWith(configMap)
+
+  }
+
+  protected def setupWith(configMap: ConfigMap): Unit = {
     containerProvider = createProvider(configMap)
     container = createContainer(configMap)
     gigaSpace = createGigaSpace(configMap)
-
   }
 
   override def afterAll(configMap: ConfigMap = new ConfigMap(Map[String, Any]())): Unit = {

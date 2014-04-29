@@ -21,7 +21,7 @@
     <!--
         Scan for components (both Spring ones and OpenSpaces ones)
     -->
-    <context:component-scan base-package="com.gigaspaces"/>
+    <context:component-scan base-package="com.gigaspaces.sbp"/>
 
     <!--
         Enables the usage of @GigaSpaceContext annotation based injection.

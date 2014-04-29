@@ -10,4 +10,6 @@ public interface WatchPart {
 
     Float getWeight();
 
+    void setWeight(Float weight);
+
 }
