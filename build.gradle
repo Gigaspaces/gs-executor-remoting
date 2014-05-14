@@ -74,12 +74,10 @@ task listJars << {
 
 ear {
     libDirName 'lib'
+    doLast{
+        file("build/libs/gs-executor-remoting.ear").renameTo(file("build/libs/executor-remoting-pu.jar"))
+    }
 }
-
-//test{
-//    systemProperty "specs2.commandline" , "html"
-//    systemProperty "specs2.outDir"  ,   "$buildDir/reports/specs2" // to put the reports in the same dir as other gradle reports
-//}
 
 tasks.withType(ScalaCompile) {
     configure(scalaCompileOptions.forkOptions) {
