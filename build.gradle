@@ -1,15 +1,18 @@
 apply plugin: 'scala'
-apply plugin: 'groovy'
+// we're using ear here because gradle's not as good as maven *gasp* at putting jars into a lib directory
+// GigaSpaces will still deploy an ear file as a ProcessingUnit
+apply plugin: 'ear'
 
 // this type of variable declaration is deprecated and will be removed in gradle >= 3
 localRepo = "/Users/jason/.m2/repository" //"$System.env.M2_REPO"
-jsHomedir = "/Users/jason/gigaspaces" //"$System.env.JSHOMEDIR"
+jsHomedir = "/Users/jason/gigaspaces-xap-premium-9.7.0-ga" //"$System.env.JSHOMEDIR"
 gsFolder = localRepo + '/com/gigaspaces/'
 gsScalaLibDir = jsHomedir + '/lib/platform/scala/'
 // 1. The tests in this build script only work with version 9.6.2 and possibly earlier
 // 2. GigaSpaces' Scala support only works in versions 9.6.2 but not 9.7
 // 3. Tests passed using a 9.6.2 build provided to me by jb
-gigaSpacesVersion = '9.6.2-9900-RELEASE'
+//gigaSpacesVersion = '9.6.2-9900-RELEASE'
+gigaSpacesVersion = '9.7.0-10496-RELEASE'
 
 repositories {
     mavenCentral()
@@ -31,11 +34,19 @@ def ensureDirectory(directoryPath) {
 dependencies {
 
     compile 'org.scala-lang:scala-library:2.10.3'
-    compile 'org.codehaus.groovy:groovy-all:2.2.0'
 
     compile files(gsFolder + 'gs-openspaces/' + gigaSpacesVersion + '/gs-openspaces-' + gigaSpacesVersion + '.jar')
     compile files(gsFolder + 'gs-runtime/' + gigaSpacesVersion + '/gs-runtime-' + gigaSpacesVersion + '.jar')
-    compile files(gsScalaLibDir + 'gs-openspaces-scala.jar')
+
+    compile 'org.slf4j:slf4j-api:1.7.5'
+    compile 'ch.qos.logback:logback-core:1.0.13'
+    compile 'ch.qos.logback:logback-classic:1.0.13'
+
+    // all other lib dependencies are either test ones or provided by the GigaSpaces distribution
+    earlib group: 'org.scala-lang', name: 'scala-library', version: '2.10.3', ext: 'jar'
+    earlib group: 'org.slf4j', name: 'slf4j-api', version: '1.7.5', ext: 'jar'
+    earlib group: 'ch.qos.logback', name: 'logback-core', version: '1.0.13', ext: 'jar'
+    earlib group: 'ch.qos.logback', name: 'logback-classic', version: '1.0.13', ext: 'jar'
 
     // GS REQUIRED LIBS
     // todo not sure if we really shouldn't move some of these over to 'provided' from 'compile'
@@ -57,10 +68,18 @@ dependencies {
 
 }
 
-test{
-    systemProperty "specs2.commandline" , "html"
-    systemProperty "specs2.outDir"  ,   "$buildDir/reports/specs2" // to put the reports in the same dir as other gradle reports
+task listJars << {
+    configurations.compile.each { File file -> println file.name }
 }
+
+ear {
+    libDirName 'lib'
+}
+
+//test{
+//    systemProperty "specs2.commandline" , "html"
+//    systemProperty "specs2.outDir"  ,   "$buildDir/reports/specs2" // to put the reports in the same dir as other gradle reports
+//}
 
 tasks.withType(ScalaCompile) {
     configure(scalaCompileOptions.forkOptions) {
@@ -72,7 +91,7 @@ tasks.withType(ScalaCompile) {
 }
 
 task test(overwrite: true, dependsOn: testClasses) << {
-    ant.taskdef(name: 'scalatest', classname: 'org.scalatest.tools.ScalaTestAntTask' , classpath: sourceSets.test.runtimeClasspath.asPath)
+    ant.taskdef(name: 'scalatest', classname: 'org.scalatest.tools.ScalaTestAntTask', classpath: sourceSets.test.runtimeClasspath.asPath)
     ant.scalatest(runpath: sourceSets.test.output.classesDir, haltonfailure: 'true', fork: 'false') {
         reporter(type: 'stdout')
     }
