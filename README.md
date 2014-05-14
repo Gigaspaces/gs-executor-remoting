@@ -2,7 +2,7 @@ gs-executor-remoting
 ====================
 
 This codebase serves as an example of how to do [Executor Based Remoting](http://docs.gigaspaces.com/xap97/executor-based-remoting.html) 
-and the [Projection API] (http://docs.gigaspaces.com/xap97/query-partial-results.html) . In combination, these techniques
+and the [Projection API] (http://docs.gigaspaces.com/xap97/query-partial-results.html). In combination, these techniques
 help us to avoid network, memory and CPU overhead.
 
 + Once you've checked this repository out, put a valid [License Key](http://docs.gigaspaces.com/xap97/license-key.html) 
@@ -33,4 +33,9 @@ in **build/libs**.
     $ gradle clean test -i
 `    
 
-That's it.
+Two tests are run. [One](https://github.com/jasonnerothin/gs-executor-remoting/blob/master/src/test/scala/com/gigaspaces/sbp/WatchRepairSuite.scala#L88) 
+[updates the Gears in a Watch](https://github.com/jasonnerothin/gs-executor-remoting/blob/master/src/main/java/com/gigaspaces/sbp/services/WatchRepair.java#L23) 
+using [Executor Based Remoting](http://docs.gigaspaces.com/xap97/executor-based-remoting.html).
+The [second](https://github.com/jasonnerothin/gs-executor-remoting/blob/master/src/test/scala/com/gigaspaces/sbp/WatchRepairSuite.scala#L102) 
+cuts down on the remoting overhead by [using projection](https://github.com/jasonnerothin/gs-executor-remoting/blob/master/src/test/scala/com/gigaspaces/sbp/WatchRepairSuite.scala#L124).
+Using [Projection API](http://docs.gigaspaces.com/xap97/query-partial-results.html) is considered a best practice.
