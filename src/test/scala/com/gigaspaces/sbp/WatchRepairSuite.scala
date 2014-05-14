@@ -8,6 +8,8 @@ import com.gigaspaces.sbp.clientonly.BrokenWatchOwner
 import org.springframework.context.support.ClassPathXmlApplicationContext
 import org.openspaces.core.GigaSpace
 import org.slf4j.{Logger, LoggerFactory}
+import org.specs2.matcher.ShouldMatchers
+import java.util
 
 /** Created by IntelliJ IDEA.
   * User: jason
@@ -16,7 +18,7 @@ import org.slf4j.{Logger, LoggerFactory}
   * NOTE: In order for this test to run with two partitions, an appropriate gslicense.xml file
   * should be installed at src/test/resources/gslicense.xml
   */
-class WatchRepairSuite extends GsI10nSuite {
+class WatchRepairSuite extends GsI10nSuite with ShouldMatchers{
 
   val logger:Logger = LoggerFactory.getLogger(getClass)
 
@@ -93,8 +95,8 @@ class WatchRepairSuite extends GsI10nSuite {
     brokenWatchOwner.sendRequestWithParts(b4Update, newGears)
 
     val afterGears = readFromGigaSpace.getGears
-    assert(afterGears === newGears, "we've changed gears")
 
+    gearsMatch(afterGears, newGears)
   }
 
   test("switchGears changes gears (with projection)") {
@@ -107,8 +109,16 @@ class WatchRepairSuite extends GsI10nSuite {
     brokenWatchOwner.sendRequestWithParts(b4Update, newGears)
 
     val afterGears = readFromGigaSpace.getGears
-    assert(afterGears === newGears, "we've changed gears (with projection)")
+    gearsMatch(afterGears, newGears)
 
+  }
+
+  def gearsMatch(afterGears: util.List[Gear], newGears: util.List[Gear]): Unit = {
+    val ag = List(afterGears)
+    val ng = List(newGears)
+    ag.foreach{ gear =>
+      ng should contain (gear)
+    }
   }
 
   def readFromGigaSpaceWithProjection: Watch = {
