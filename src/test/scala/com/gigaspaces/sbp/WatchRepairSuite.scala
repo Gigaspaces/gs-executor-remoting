@@ -26,16 +26,16 @@ class WatchRepairSuite extends GsI10nSuite with ShouldMatchers{
 
   val rand = new Random(System.currentTimeMillis())
   val maxNumPartsPerWatch = 3
-  val numPartitions = 2
+  val numPartitions = 1
   val numTestWatches = 4
   val spaceName = classOf[WatchRepairSuite].getSimpleName
 
   defaults = Map[String, Any](
     schemaProperty -> "partitioned-sync2backup"
     , numInstancesProperty -> int2Integer(numPartitions)
-    , numBackupsProperty -> int2Integer(1)
-    , instanceIdProperty -> int2Integer(1)
-    , spaceUrlProperty -> s"/./$spaceName?groups=${spaceName}Group"
+    , numBackupsProperty -> int2Integer(0)
+    , instanceIdProperty -> int2Integer(1) // count begins at 1
+    , spaceUrlProperty -> s"/./$spaceName?locators=localhost:4174&groups=${spaceName}Group"
     , spaceModeProperty -> SpaceMode.Embedded
     , configLocationProperty -> "classpath*:/META-INF/Spring/pu.xml"
     , localViewQueryListProperty -> List[SQLQuery[_]]()
@@ -178,7 +178,7 @@ class WatchRepairSuite extends GsI10nSuite with ShouldMatchers{
     }
     val w = new Watch
     w.setName(s"Watch $num")
-    w.setPartitionId(0) // setting it to the first partition is a little hacky, but it's sort of required by the integration testing infrastructure.
+    w.setPartitionId(num % numPartitions) // setting it to the first partition is a little hacky, but it's sort of required by the integration testing infrastructure.
     w.setGears(makeTestGears())
     w.setSprings(makeTestSprings())
     w
