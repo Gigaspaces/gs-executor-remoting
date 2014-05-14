@@ -7,6 +7,7 @@ import com.j_spaces.core.client.SQLQuery
 import com.gigaspaces.sbp.clientonly.BrokenWatchOwner
 import org.springframework.context.support.ClassPathXmlApplicationContext
 import org.openspaces.core.GigaSpace
+import org.slf4j.{Logger, LoggerFactory}
 
 /** Created by IntelliJ IDEA.
   * User: jason
@@ -17,7 +18,7 @@ import org.openspaces.core.GigaSpace
   */
 class WatchRepairSuite extends GsI10nSuite {
 
-//  val logger:Logger = LoggerFactory.getLogger(getClass())
+  val logger:Logger = LoggerFactory.getLogger(getClass)
 
   // SETUP STUFF
 
@@ -75,7 +76,7 @@ class WatchRepairSuite extends GsI10nSuite {
       w => w.setSpaceId(clusteredProxy.write(w).getUID)
     }
     testWatches.foreach{
-      println
+      w => logger.trace(s"Wrote $w .")
     }
     testWatches
   }

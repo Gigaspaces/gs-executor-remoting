@@ -28,13 +28,17 @@ public class RetailShop implements WatchRepair {
     @Override
     public Watch switchGears(Watch toRepair, List<Gear> newGears) {
 
-        logger.debug(String.format("Watch: %s .", toRepair));
-        for( Gear gear : newGears) logger.debug(String.format("Gears: %s", gear));
-        logger.debug(String.format("GigaSpace %s .", gigaSpace));
+        logger.trace("Watch: {} .", toRepair);
+        for (Gear gear : newGears) logger.trace("Gears: {}", gear);
+        logger.trace("GigaSpace {} .", gigaSpace);
 
         Watch original = gigaSpace.readById(Watch.class, toRepair.getSpaceId());
-        original.setGears(newGears);
-        gigaSpace.write(original);
+        if (original != null) {
+            original.setGears(newGears);
+            gigaSpace.write(original);
+        } else {
+            logger.error("Retrieved a null Watch, which is not expected for this demo. Watch toRepair was: {} .", toRepair);
+        }
 
         return original;
 
