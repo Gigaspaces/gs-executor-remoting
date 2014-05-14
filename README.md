@@ -10,27 +10,12 @@ in the [src/test/resources](https://github.com/jasonnerothin/gs-executor-remotin
 directory. 
 (This demo uses 2 partitions, which is incompatible with the freeware licensing terms.)
 
-+ To build a [Processing Unit](http://docs.gigaspaces.com/xap97/java-tutorial-part5.html), do:
-
-`
-	$ gradle -C rebuild clean ear -x test
-`
-
-This will produce a [Processing Unit](http://docs.gigaspaces.com/xap97/java-tutorial-part5.html), named **executor-remoting-pu.jar**
-in **build/libs**.
-
-+ Start a grid:
-
-`
-    $ gs-agent.(sh|bat)  gsa.global.lus 1 gsa.global.gsm 1 gsa.gsc 2
-`    
-
-+ Deploy the Processing Unit with settings `cluster_schema=partitioned-sync2backup total_members=2,1` 
-
-+ Run the WatchRepairSuite of tests from the command line: 
-
-`
-    $ gradle clean test -i
-`    
-
-That's it.
++ Open up the WatchRepairSuite. Two tests are provided: "switchGears changes gears" and "switchGears changes gears 
+(with projection)". 
+ 
+Either can be run or debugged in a properly configured IDE: IntelliJ IDEA requires the [scala plugin]
+(http://confluence.jetbrains.com/display/SCA/Scala+Plugin+for+IntelliJ+IDEA) be installed. The gradle plugin now ships 
+with it installed, for versions >= 12. There is a good [scala flavor for Eclipse](http://scala-ide.org/), as well.
+  
+If you wish to run this code from the command line, you may do so by checking out the "cli" branch of this repository
+and look at the readme.

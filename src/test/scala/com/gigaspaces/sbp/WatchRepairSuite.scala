@@ -33,10 +33,10 @@ class WatchRepairSuite extends GsI10nSuite with ShouldMatchers{
   defaults = Map[String, Any](
     schemaProperty -> "partitioned-sync2backup"
     , numInstancesProperty -> int2Integer(numPartitions)
-    , numBackupsProperty -> int2Integer(0)
+    , numBackupsProperty -> int2Integer(1)
     , instanceIdProperty -> int2Integer(1)
-    , spaceUrlProperty -> s"jini:/*/*/$spaceName?locators=localhost:4174&groups=watches"
-    , spaceModeProperty -> SpaceMode.Remote
+    , spaceUrlProperty -> s"/./$spaceName?groups=${spaceName}Group"
+    , spaceModeProperty -> SpaceMode.Embedded
     , configLocationProperty -> "classpath*:/META-INF/Spring/pu.xml"
     , localViewQueryListProperty -> List[SQLQuery[_]]()
   )
@@ -134,7 +134,7 @@ class WatchRepairSuite extends GsI10nSuite with ShouldMatchers{
   }
 
   def aTestWatch: Watch = {
-    val watch = testWatches.filter(w => w.getName == "Watch 2").head
+    val watch = testWatches.filter(w => w.getName == "Watch 1").head
     assume(watch != null, "Test watch was not written as expected.")
     watch
   }
@@ -178,7 +178,7 @@ class WatchRepairSuite extends GsI10nSuite with ShouldMatchers{
     }
     val w = new Watch
     w.setName(s"Watch $num")
-    w.setPartitionId(num % numPartitions)
+    w.setPartitionId(0) // setting it to the first partition is a little hacky, but it's sort of required by the integration testing infrastructure.
     w.setGears(makeTestGears())
     w.setSprings(makeTestSprings())
     w
