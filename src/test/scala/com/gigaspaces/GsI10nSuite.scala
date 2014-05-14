@@ -51,6 +51,11 @@ abstract class GsI10nSuite extends FunSuite with BeforeAndAfterAllConfigMap with
    */
   protected var containerProvider: ProcessingUnitContainerProvider = null
   protected var container: ProcessingUnitContainer = null
+  /**
+   * Note that this gigaSpace may be a single partition of a multi-partition grid,
+   * depending upon the specifics of the defaults/ConfigMap used by the implementing
+   * subclass of this Suite.
+   */
   protected var gigaSpace: GigaSpace = null
 
   object SpaceMode extends Enumeration {
