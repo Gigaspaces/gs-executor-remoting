@@ -2,7 +2,7 @@ package com.gigaspaces.sbp.serveronly;
 
 import com.gigaspaces.sbp.Gear;
 import com.gigaspaces.sbp.Watch;
-import com.gigaspaces.sbp.WatchRepair;
+import com.gigaspaces.sbp.services.WatchRepair;
 import org.openspaces.core.GigaSpace;
 import org.openspaces.remoting.RemotingService;
 
@@ -22,11 +22,13 @@ public class RetailShop implements WatchRepair {
     private GigaSpace gigaSpace;
 
     @Override
-    public void switchGears(Watch toRepair, List<Gear> newGears) {
+    public Watch switchGears(Watch toRepair, List<Gear> newGears) {
 
         Watch original = gigaSpace.readById(Watch.class, toRepair.getSpaceId());
         original.setGears(newGears);
 //        gigaSpace.write(original);
+
+        return original;
 
     }
 

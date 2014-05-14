@@ -16,13 +16,14 @@ import org.springframework.context.support.ClassPathXmlApplicationContext
   */
 class WatchRepairSuite extends GsI10nSuite {
 
+//  val logger:Logger = LoggerFactory.getLogger(getClass())
+
   // SETUP STUFF
 
   val rand = new Random(System.currentTimeMillis())
   val maxNumPartsPerWatch = 3
   val numPartitions = 2
   val numTestWatches = 4
-
   val spaceName = classOf[WatchRepairSuite].getSimpleName
 
   defaults = Map[String, Any](
@@ -30,37 +31,45 @@ class WatchRepairSuite extends GsI10nSuite {
     , numInstancesProperty -> int2Integer(numPartitions)
     , numBackupsProperty -> int2Integer(0)
     , instanceIdProperty -> int2Integer(1)
-    , spaceUrlProperty -> s"/./$spaceName"
-    , spaceModeProperty -> SpaceMode.Embedded
-    , configLocationProperty -> "classpath*:/com/gigaspaces/sbp/WatchRepairPu.xml"
+    , spaceUrlProperty -> s"jini:/*/*/$spaceName?locators=localhost:4174&groups=watches"
+    , spaceModeProperty -> SpaceMode.Remote
+    , configLocationProperty -> "classpath*:/META-INF/Spring/pu.xml"
     , localViewQueryListProperty -> List[SQLQuery[_]]()
   )
 
-  val defaultConfigMap = new ConfigMap( defaults )
+  val defaultConfigMap = new ConfigMap(defaults)
+  val clientXmlContextResourceLocation = "classpath*:/com/gigaspaces/sbp/WatchRepairClient.xml"
+  val remoteProxyBeanName = "brokenWatchOwner"
+
+  // fields initialized for test
 
   var brokenWatchOwner: BrokenWatchOwner = null
+  var testWatches: Seq[Watch] = null
 
-  def loadRemoteProxyContainingBean(contextResource: String): BrokenWatchOwner = {
-    val ctxt = new ClassPathXmlApplicationContext(contextResource)
-    ctxt.getBean("brokenWatchOwner").asInstanceOf[BrokenWatchOwner]
-  }
+  // initialization methods
 
   override def beforeAll(cm: ConfigMap): Unit = {
     setupWith(defaultConfigMap)
-    brokenWatchOwner = loadRemoteProxyContainingBean("classpath*:/com/gigaspaces/sbp/WatchRepairClient.xml")
+    brokenWatchOwner = loadBeanThatUsesRemoteExecutorService(clientXmlContextResourceLocation)
   }
-
-  var testWatches: Seq[Watch] = null
 
   override def beforeEach(): Unit = {
     testWatches = writeTestWatches()
   }
 
+  def loadBeanThatUsesRemoteExecutorService(contextResource: String): BrokenWatchOwner = {
+    val ctxt = new ClassPathXmlApplicationContext(contextResource)
+    ctxt.getBean(remoteProxyBeanName).asInstanceOf[BrokenWatchOwner]
+  }
+
   def writeTestWatches(): List[Watch] = {
     val testWatches = {
       var list = List[Watch]()
-      for (i <- 1 to numTestWatches + 1) list = list :+ testWatch(i)
+      for (i <- 1 to numTestWatches + 1) list = list :+ makeTestWatch(i)
       list
+    }
+    testWatches.foreach{
+      println
     }
     testWatches.foreach {
       w => w.setSpaceId(gigaSpace.write(w).getUID)
@@ -74,7 +83,7 @@ class WatchRepairSuite extends GsI10nSuite {
 
     val b4Update = readFromGigaSpace
     val oldGears = b4Update.getGears
-    val newGears = testGears()
+    val newGears = makeTestGears()
     assume(oldGears != newGears)
 
     brokenWatchOwner.sendRequestWithParts(b4Update, newGears)
@@ -86,9 +95,9 @@ class WatchRepairSuite extends GsI10nSuite {
 
   test("switchGears changes gears (with projection)") {
 
-    val b4Update = readFromGigaSpace
+    val b4Update = readFromGigaSpaceWithProjection
     val oldGears = b4Update.getGears
-    val newGears = testGears()
+    val newGears = makeTestGears()
     assume(oldGears != newGears)
 
     brokenWatchOwner.sendRequestWithParts(b4Update, newGears)
@@ -100,8 +109,8 @@ class WatchRepairSuite extends GsI10nSuite {
 
   def readFromGigaSpaceWithProjection: Watch = {
 
-    val query = new SQLQuery[Watch](classOf[Watch], "spaceId = ?", firstTestWatch.getSpaceId)
-      .setProjections("spaceId","partitionId","name","weight")
+    val query = new SQLQuery[Watch](classOf[Watch], "spaceId = ?", aTestWatch.getSpaceId)
+      .setProjections("spaceId", "partitionId", "name", "weight")
     val watch = gigaSpace.read[Watch](query)
 
     assume(watch != null, "Test watch not returned from GigaSpace")
@@ -110,7 +119,7 @@ class WatchRepairSuite extends GsI10nSuite {
 
   }
 
-  def firstTestWatch: Watch = {
+  def aTestWatch: Watch = {
     val watch = testWatches.filter(w => w.getName == "Watch 2").head
     assume(watch != null, "Test watch was not written as expected.")
     watch
@@ -118,47 +127,45 @@ class WatchRepairSuite extends GsI10nSuite {
 
   def readFromGigaSpace: Watch = {
 
-    val watch = gigaSpace.readById(classOf[Watch], firstTestWatch.getSpaceId)
+    val watch = gigaSpace.readById(classOf[Watch], aTestWatch.getSpaceId)
     assume(watch != null, "Test watch not returned from GigaSpace")
     watch
 
   }
 
   // TEST DATA GEN STUFF
+
   def randUpper = math.abs(rand.nextInt(maxNumPartsPerWatch)) + 1
-
-  def testWatch(num: Int): Watch = {
-    val w = new Watch
-    w.setName(s"Watch $num")
-    w.setPartitionId(num % numPartitions)
-    w.setGears(testGears())
-    w.setSprings(testSprings())
-    w
-  }
-
-  def testGears(): java.util.List[Gear] = {
-    val list = new java.util.ArrayList[Gear]()
-    for (i <- 0 to randUpper) list.add(testGear())
-    list
-  }
-
-  def testGear(): Gear = {
-    setMass(new Gear).asInstanceOf[Gear]
-  }
-
-  def testSprings(): java.util.List[Spring] = {
-    val list = new java.util.ArrayList[Spring]()
-    for (i <- 0 to randUpper) list.add(testSpring())
-    list
-  }
-
-  def testSpring(): Spring = {
-    setMass(new Spring).asInstanceOf[Spring]
-  }
 
   def setMass(part: WatchPart): WatchPart = {
     part.setWeight(Math.abs(rand.nextFloat()))
     part
+  }
+
+  def makeTestGears(): java.util.List[Gear] = {
+    def makeTestGear(): Gear = {
+      setMass(new Gear).asInstanceOf[Gear]
+    }
+    val list = new java.util.ArrayList[Gear]()
+    for (i <- 0 to randUpper) list.add(makeTestGear())
+    list
+  }
+
+  def makeTestWatch(num: Int): Watch = {
+    def makeTestSprings(): java.util.List[Spring] = {
+      def makeTestSpring(): Spring = {
+        setMass(new Spring).asInstanceOf[Spring]
+      }
+      val list = new java.util.ArrayList[Spring]()
+      for (i <- 0 to randUpper) list.add(makeTestSpring())
+      list
+    }
+    val w = new Watch
+    w.setName(s"Watch $num")
+    w.setPartitionId(num % numPartitions)
+    w.setGears(makeTestGears())
+    w.setSprings(makeTestSprings())
+    w
   }
 
 }

@@ -1,4 +1,7 @@
-package com.gigaspaces.sbp;
+package com.gigaspaces.sbp.services;
+
+import com.gigaspaces.sbp.Gear;
+import com.gigaspaces.sbp.Watch;
 
 import java.util.List;
 
@@ -15,7 +18,8 @@ public interface WatchRepair {
      * the data.
      * @param toRepair on which to perform the gear update
      * @param newGears gears to use
+     * @return updated {@link Watch}
      */
-    void switchGears(Watch toRepair, List<Gear> newGears);
+    Watch switchGears(Watch toRepair, List<Gear> newGears);
 
 }

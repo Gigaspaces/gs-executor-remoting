@@ -81,4 +81,17 @@ public class Watch implements Serializable{
         dirty = true;
     }
 
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("Watch{");
+        sb.append("spaceId='").append(spaceId).append('\'');
+        sb.append(", partitionId=").append(partitionId);
+        sb.append(", name='").append(name).append('\'');
+        sb.append(", weight=").append(weight);
+        sb.append(", gears=").append(gears);
+        sb.append(", springs=").append(springs);
+        sb.append(", dirty=").append(dirty);
+        sb.append('}');
+        return sb.toString();
+    }
 }
