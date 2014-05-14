@@ -6,6 +6,7 @@ import org.scalatest.ConfigMap
 import com.j_spaces.core.client.SQLQuery
 import com.gigaspaces.sbp.clientonly.BrokenWatchOwner
 import org.springframework.context.support.ClassPathXmlApplicationContext
+import org.openspaces.core.GigaSpace
 
 /** Created by IntelliJ IDEA.
   * User: jason
@@ -40,26 +41,28 @@ class WatchRepairSuite extends GsI10nSuite {
   val defaultConfigMap = new ConfigMap(defaults)
   val clientXmlContextResourceLocation = "classpath*:/com/gigaspaces/sbp/WatchRepairClient.xml"
   val remoteProxyBeanName = "brokenWatchOwner"
+  val clusteredProxyBeanName = "gigaSpace"
 
   // fields initialized for test
-
   var brokenWatchOwner: BrokenWatchOwner = null
   var testWatches: Seq[Watch] = null
+  var clusteredProxy: GigaSpace = null
 
   // initialization methods
 
   override def beforeAll(cm: ConfigMap): Unit = {
     setupWith(defaultConfigMap)
-    brokenWatchOwner = loadBeanThatUsesRemoteExecutorService(clientXmlContextResourceLocation)
+    val ctxt = loadContext(clientXmlContextResourceLocation)
+    brokenWatchOwner = ctxt.getBean(remoteProxyBeanName).asInstanceOf[BrokenWatchOwner]
+    clusteredProxy = ctxt.getBean(clusteredProxyBeanName).asInstanceOf[GigaSpace]
   }
 
   override def beforeEach(): Unit = {
     testWatches = writeTestWatches()
   }
 
-  def loadBeanThatUsesRemoteExecutorService(contextResource: String): BrokenWatchOwner = {
-    val ctxt = new ClassPathXmlApplicationContext(contextResource)
-    ctxt.getBean(remoteProxyBeanName).asInstanceOf[BrokenWatchOwner]
+  def loadContext(descriptor: String) : ClassPathXmlApplicationContext = {
+    new ClassPathXmlApplicationContext(descriptor)
   }
 
   def writeTestWatches(): List[Watch] = {
@@ -68,11 +71,11 @@ class WatchRepairSuite extends GsI10nSuite {
       for (i <- 1 to numTestWatches + 1) list = list :+ makeTestWatch(i)
       list
     }
+    testWatches.foreach {
+      w => w.setSpaceId(clusteredProxy.write(w).getUID)
+    }
     testWatches.foreach{
       println
-    }
-    testWatches.foreach {
-      w => w.setSpaceId(gigaSpace.write(w).getUID)
     }
     testWatches
   }
@@ -111,7 +114,7 @@ class WatchRepairSuite extends GsI10nSuite {
 
     val query = new SQLQuery[Watch](classOf[Watch], "spaceId = ?", aTestWatch.getSpaceId)
       .setProjections("spaceId", "partitionId", "name", "weight")
-    val watch = gigaSpace.read[Watch](query)
+    val watch = clusteredProxy.read[Watch](query)
 
     assume(watch != null, "Test watch not returned from GigaSpace")
 
@@ -127,7 +130,7 @@ class WatchRepairSuite extends GsI10nSuite {
 
   def readFromGigaSpace: Watch = {
 
-    val watch = gigaSpace.readById(classOf[Watch], aTestWatch.getSpaceId)
+    val watch = clusteredProxy.readById(classOf[Watch], aTestWatch.getSpaceId)
     assume(watch != null, "Test watch not returned from GigaSpace")
     watch
 
@@ -144,7 +147,9 @@ class WatchRepairSuite extends GsI10nSuite {
 
   def makeTestGears(): java.util.List[Gear] = {
     def makeTestGear(): Gear = {
-      setMass(new Gear).asInstanceOf[Gear]
+      val gear = setMass(new Gear).asInstanceOf[Gear]
+      gear.setNumber(rand.nextInt(10))
+      gear
     }
     val list = new java.util.ArrayList[Gear]()
     for (i <- 0 to randUpper) list.add(makeTestGear())

@@ -29,4 +29,14 @@ public class Gear implements WatchPart, Serializable {
     public void setWeight(Float weight){
         this.weight = weight;
     }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("Gear{");
+        sb.append("number=").append(number);
+        sb.append(", weight=").append(weight);
+        sb.append('}');
+        return sb.toString();
+    }
+
 }

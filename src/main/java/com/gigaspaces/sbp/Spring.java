@@ -20,4 +20,12 @@ public class Spring implements WatchPart, Serializable{
     public void setWeight(Float weight) {
         this.weight = weight;
     }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("Spring{");
+        sb.append("weight=").append(weight);
+        sb.append('}');
+        return sb.toString();
+    }
 }

@@ -15,6 +15,7 @@
     <os-core:giga-space-context/>
     <os-remoting:annotation-support/>
 
+    <context:component-scan base-package="com.gigaspaces.sbp.services"/>
     <context:component-scan base-package="com.gigaspaces.sbp.serveronly"/>
 
     <os-core:space id="space" url="/./WatchRepairSuite?locators=localhost:4174&amp;groups=watches" />
