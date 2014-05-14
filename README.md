@@ -1,20 +1,26 @@
 gs-executor-remoting
 ====================
 
-Example of how to do executor remoting in an efficient manner by using the [Projection API](http://docs.gigaspaces.com/xap97/query-partial-results.html) to avoid network, memory and CPU overhead.
+Example of how to do executor remoting, with emphasis on how to use the [Projection API]
+(http://docs.gigaspaces.com/xap97/query-partial-results.html) to avoid network, memory and CPU overhead.
 
-To build a processing unit, do:
+1. Once you've checked this codebase out, put a valid gslicense.xml in the src/test/resources directory. 
+(This demo uses 2 partitions, which is incompatible with the freeware licensing terms.)
 
-	$ gradle clean assemble -x test
+1. To build a Processing Unit, do:
 
-which will produce a Processing Unit, named "./build/libs/gs-executor-remoting.ear".
+	$ gradle -C rebuild clean ear -x test
 
-Then deploy to a grid started, thusly:
+This will produce a Processing Unit, named "build/libs/executor-remoting-pu.jar".
 
-    $ gs-agent.(sh|bat) gsa.gsc 2 gsa.global.lus 1 gsa.global.gsm 1
+1. Start a grid:
 
-Then, run [WatchRepairSuite](https://github.com/jasonnerothin/gs-executor-remoting/blob/master/src/test/scala/com/gigaspaces/sbp/WatchRepairSuite.scala#L17) from an IDE or command line, thusly:
+    $ gs-agent.(sh|bat)  gsa.global.lus 1 gsa.global.gsm 1 gsa.gsc 2
+    
+1. Deploy the Processing Unit with settings: cluster_schema=partitioned-sync2backup total_members=2,1 .
+
+1. Run the WatchRepairSuite of tests from the command line: 
 
     $ gradle clean test -i
-
+    
 That's it.
